@@ -1,2 +1,3 @@
-environment-settings:
-  application-id: aD2$98L
+application:
+  default-username: admin
+  default-password: password
