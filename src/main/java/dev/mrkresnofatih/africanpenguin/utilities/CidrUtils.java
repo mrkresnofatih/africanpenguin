@@ -1,9 +1,14 @@
 package dev.mrkresnofatih.africanpenguin.utilities;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class CidrUtils {
     public static Boolean checkValidRawCidrString(String candidateRawCidrString) {
+        if (Objects.isNull(candidateRawCidrString)) {
+            return false;
+        }
+
         var segments = candidateRawCidrString.split("[./]");
 
         // valid cidr string must have 5 segments
@@ -42,6 +47,10 @@ public class CidrUtils {
     }
 
     public static Boolean checkValidFormattedCidrString(String candidateFormattedCidrString) {
+        if (Objects.isNull(candidateFormattedCidrString)) {
+            return false;
+        }
+
         var formattedCidrStringIs18Characters = (candidateFormattedCidrString.length() == 18);
         if (!formattedCidrStringIs18Characters) {
             return false;
@@ -60,6 +69,47 @@ public class CidrUtils {
         }
 
         return checkValidRawCidrString(candidateFormattedCidrString);
+    }
+
+    public static String convertFormattedToRawCidrString(String formattedCidrString) {
+        var isValidFormattedCidrString = checkValidFormattedCidrString(formattedCidrString);
+        if (!isValidFormattedCidrString) {
+            return null;
+        }
+
+        var segments = Arrays
+                .stream(formattedCidrString.split("[./]"))
+                .map(Integer::parseInt)
+                .map(p -> Integer.toString(p))
+                .toList();
+
+        return String.format("%s.%s.%s.%s/%s",
+                segments.get(0),
+                segments.get(1),
+                segments.get(2),
+                segments.get(3),
+                segments.get(4));
+    }
+
+    public static String convertRawToFormattedCidrString(String rawCidrString) {
+        var isValidRawCidrString = checkValidRawCidrString(rawCidrString);
+        if (!isValidRawCidrString) {
+            return null;
+        }
+
+        var stringSegments = rawCidrString.split("[./]");
+        var segments = Arrays
+                .stream(Arrays.copyOfRange(stringSegments, 0, 4))
+                .map(Integer::parseInt)
+                .map(p -> String.format("%03d", p))
+                .toList();
+        var slashSegment = String.format("%02d", Integer.parseInt(stringSegments[4]));
+        return String.format("%s.%s.%s.%s/%s",
+                segments.get(0),
+                segments.get(1),
+                segments.get(2),
+                segments.get(3),
+                slashSegment);
     }
 
     private static Integer tryParseInteger(String text) {

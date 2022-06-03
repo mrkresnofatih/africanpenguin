@@ -101,4 +101,26 @@ class CidrUtilsTest {
         var validity = CidrUtils.checkValidFormattedCidrString(rawCidr);
         assertThat(validity).isTrue();
     }
+
+    @Test
+    void itShouldReturnValidRawString() {
+        var formattedCidr = "010.194.000.000/08";
+        var rawCidr = CidrUtils.convertFormattedToRawCidrString(formattedCidr);
+
+        var isValidRawCidr = CidrUtils.checkValidRawCidrString(rawCidr);
+        var expectedRawCidr = "10.194.0.0/8";
+        assertThat(rawCidr).isEqualTo(expectedRawCidr);
+        assertThat(isValidRawCidr).isTrue();
+    }
+
+    @Test
+    void itShouldReturnValidFormattedString() {
+        var rawCidr = "10.192.0.0/8";
+        var formattedCidr = CidrUtils.convertRawToFormattedCidrString(rawCidr);
+
+        var isValidFormattedCidr = CidrUtils.checkValidFormattedCidrString(formattedCidr);
+        var expectedFormattedCidr = "010.192.000.000/08";
+        assertThat(formattedCidr).isEqualTo(expectedFormattedCidr);
+        assertThat(isValidFormattedCidr).isTrue();
+    }
 }
