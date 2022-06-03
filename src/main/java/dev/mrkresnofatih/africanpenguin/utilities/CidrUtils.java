@@ -2,8 +2,56 @@ package dev.mrkresnofatih.africanpenguin.utilities;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.lang.Math;
 
 public class CidrUtils {
+    public static String getStartingIpOfCidr(String formattedCidr) {
+        var segments = formattedCidr.split("[./]");
+        var slash = segments[4];
+        var identicalStartingDigits = Integer.parseInt(slash) / 8;
+        return switch (identicalStartingDigits) {
+            case 0 -> "000.000.000.000";
+            case 1 -> String.format("%s.000.000.000", segments[0]);
+            case 2 -> String.format("%s.%s.000.000", segments[0], segments[1]);
+            case 3 -> String.format("%s.%s.%s.000", segments[0], segments[1], segments[2]);
+            default -> String.format("%s.%s.%s.%s", segments[0], segments[1], segments[2], segments[3]);
+        };
+    }
+
+    public static String getEndingIpOfCidr(String formattedCidr) {
+        var segments = formattedCidr.split("[./]");
+        var slash = segments[4];
+        var identicalStartingDigits = Integer.parseInt(slash) / 8;
+        return switch (identicalStartingDigits) {
+            case 0 -> String.format("%s.255.255.255", getNextSegment(slash, segments[0]));
+            case 1 -> String.format("%s.%s.255.255", segments[0], getNextSegment(slash, segments[1]));
+            case 2 -> String.format("%s.%s.%s.255", segments[0], segments[1], getNextSegment(slash, segments[2]));
+            case 3 -> String.format("%s.%s.%s.%s", segments[0], segments[1], segments[2], getNextSegment(slash, segments[3]));
+            default -> String.format("%s.%s.%s.%s", segments[0], segments[1], segments[2], segments[3]);
+        };
+    }
+
+    private static String getNextSegment(String slash, String segment) {
+        var slashPlus = Integer.parseInt(slash) % 8;
+        return getStringIntegerIsEven(segment) ?
+                calculateNextSegmentEven(segment, slashPlus) :
+                calculateNextSegmentOdd(segment);
+    }
+
+    private static String calculateNextSegmentEven(String segment, int slashPlus) {
+        var newSegment = (Integer.parseInt(segment)) + (256/Math.pow(2, slashPlus)) - 1;
+        return String.format("%03d", (int) newSegment);
+    }
+
+    private static String calculateNextSegmentOdd(String segment) {
+        var newSegment = (Integer.parseInt(segment)) + 1;
+        return String.format("%03d", newSegment);
+    }
+
+    private static Boolean getStringIntegerIsEven(String stringInteger) {
+        return (Integer.parseInt(stringInteger) % 2 == 0);
+    }
+
     public static Boolean checkValidRawCidrString(String candidateRawCidrString) {
         if (Objects.isNull(candidateRawCidrString)) {
             return false;
