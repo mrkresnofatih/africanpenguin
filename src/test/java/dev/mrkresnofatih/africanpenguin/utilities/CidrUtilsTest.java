@@ -5,6 +5,78 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CidrUtilsTest {
     @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash1() {
+        var formattedCidr = "010.198.000.000/01";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "2147483648";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash4() {
+        var formattedCidr = "010.000.000.000/04";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "268435456";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash7() {
+        var formattedCidr = "010.000.000.000/07";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "33554432";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash10() {
+        var formattedCidr = "010.000.000.000/10";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "4194304";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash16() {
+        var formattedCidr = "010.192.000.000/16";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "65536";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash22() {
+        var formattedCidr = "010.192.000.000/22";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "1024";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash24() {
+        var formattedCidr = "010.192.082.000/24";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "256";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash28() {
+        var formattedCidr = "010.192.082.000/28";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "16";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
+    void itShouldReturnCorrectTotalHostFromCidrSlash32() {
+        var formattedCidr = "010.192.082.110/32";
+        var calculatedTotalHost = CidrUtils.getTotalHostsFromCidr(formattedCidr);
+        var expectedTotalHost = "1";
+        assertThat(calculatedTotalHost).isEqualTo(expectedTotalHost);
+    }
+
+    @Test
     void itShouldReturnFalseWhenSegmentsNot5RawCidrStringIsInvalid() {
         var rawCidr = "256.198.0/24";
         var validity = CidrUtils.checkValidRawCidrString(rawCidr);

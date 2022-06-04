@@ -5,6 +5,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CidrIpUtilsTest {
     @Test
+    void itShouldReturnCorrectNextIpOnSegment1() {
+        var currentIp = "010.255.255.255";
+        var expectedNextIp = "011.000.000.000";
+        var calculatedNextIp = CidrUtils.getNextIp(currentIp);
+        assertThat(calculatedNextIp).isEqualTo(expectedNextIp);
+    }
+
+    @Test
+    void itShouldReturnCorrectNextIpOnSegment2() {
+        var currentIp = "010.123.255.255";
+        var expectedNextIp = "010.124.000.000";
+        var calculatedNextIp = CidrUtils.getNextIp(currentIp);
+        assertThat(calculatedNextIp).isEqualTo(expectedNextIp);
+    }
+
+    @Test
+    void itShouldReturnCorrectNextIpOnSegment3() {
+        var currentIp = "010.123.222.255";
+        var expectedNextIp = "010.123.223.000";
+        var calculatedNextIp = CidrUtils.getNextIp(currentIp);
+        assertThat(calculatedNextIp).isEqualTo(expectedNextIp);
+    }
+
+    @Test
+    void itShouldReturnCorrectNextIpOnSegment4() {
+        var currentIp = "010.123.222.103";
+        var expectedNextIp = "010.123.222.104";
+        var calculatedNextIp = CidrUtils.getNextIp(currentIp);
+        assertThat(calculatedNextIp).isEqualTo(expectedNextIp);
+    }
+
+    @Test
     void itShouldReturnCorrectStartingIpOnSlash2() {
         var givenFormattedCidr = "010.000.000.000/02";
         var calculatedStartingIp = CidrUtils.getStartingIpOfCidr(givenFormattedCidr);
@@ -254,9 +286,9 @@ class CidrIpUtilsTest {
 
     @Test
     void itShouldReturnCorrectEndingIpOnSlash32() {
-        var givenFormattedCidr = "036.052.012.068/32";
+        var givenFormattedCidr = "036.052.012.067/32";
         var calculatedStartingIp = CidrUtils.getEndingIpOfCidr(givenFormattedCidr);
-        var expectedStartingIp = "036.052.012.068";
+        var expectedStartingIp = "036.052.012.067";
         assertThat(calculatedStartingIp).isEqualTo(expectedStartingIp);
     }
 }

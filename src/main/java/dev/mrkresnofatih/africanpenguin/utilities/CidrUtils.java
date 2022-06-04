@@ -5,6 +5,39 @@ import java.util.Objects;
 import java.lang.Math;
 
 public class CidrUtils {
+    public static String getNextIp(String ip) {
+        var segments = ip.split("[./]");
+        var targetDigitForIncrement = 3;
+        for (int index = 3; index >= 0; index--) {
+            if (!segments[index].equals("255")) {
+                break;
+            }
+            targetDigitForIncrement = index - 1;
+        }
+
+        var result = "";
+        for (int id = 0; id < targetDigitForIncrement; id++) {
+            result = String.format("%s.%s", result, segments[id]);
+        }
+
+        var incrementSegment = Integer.parseInt(segments[targetDigitForIncrement]) + 1;
+        result = String.format("%s.%03d", result, incrementSegment);
+
+        for (int idx = targetDigitForIncrement; idx < 3; idx++) {
+            result = String.format("%s.%s", result, "000");
+        }
+
+        result = result.replaceFirst(".", "");
+
+        return result.toString();
+    }
+
+    public static String getTotalHostsFromCidr(String formattedCidr) {
+        var segments = formattedCidr.split("[./]");
+        var slash = segments[4];
+        var numberOfHosts = (long) Math.pow(2, 32-Integer.parseInt(slash));
+        return String.valueOf(numberOfHosts);
+    }
     public static String getStartingIpOfCidr(String formattedCidr) {
         var segments = formattedCidr.split("[./]");
         var slash = segments[4];
