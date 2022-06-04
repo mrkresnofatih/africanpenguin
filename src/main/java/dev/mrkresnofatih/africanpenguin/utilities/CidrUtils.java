@@ -5,6 +5,24 @@ import java.util.Objects;
 import java.lang.Math;
 
 public class CidrUtils {
+    public static Boolean getIpIsBetween(String ip, String bottomIp, String topIp) {
+        var pseudoValueBottom = getPseudoValueOfIp(bottomIp);
+        var pseudoValueTop = getPseudoValueOfIp(topIp);
+        var pseudoValueIp = getPseudoValueOfIp(ip);
+        return (pseudoValueIp > pseudoValueBottom && pseudoValueIp < pseudoValueTop);
+    }
+
+    private static Long getPseudoValueOfIp(String ip) {
+        var segments = ip.split("[./]");
+        var pseudoValue = 0L;
+        var segmentCounter = 0;
+        for (var segment : segments) {
+            pseudoValue += Long.parseLong(segment)*((long) Math.pow(1000, 3 - segmentCounter));
+            segmentCounter++;
+        }
+        return pseudoValue;
+    }
+
     public static String getNextIp(String ip) {
         var segments = ip.split("[./]");
         var targetDigitForIncrement = 3;

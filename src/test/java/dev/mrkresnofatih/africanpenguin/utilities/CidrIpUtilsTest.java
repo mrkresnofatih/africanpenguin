@@ -5,6 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CidrIpUtilsTest {
     @Test
+    void itShouldReturnCorrectWhenIpIsInBetween() {
+        var bottom = "010.195.063.255";
+        var ip = "010.195.255.255";
+        var top = "010.196.000.000";
+        var calculatedIsBetween = CidrUtils.getIpIsBetween(ip, bottom, top);
+        assertThat(calculatedIsBetween).isTrue();
+    }
+
+    @Test
     void itShouldReturnCorrectNextIpOnSegment1() {
         var currentIp = "010.255.255.255";
         var expectedNextIp = "011.000.000.000";
