@@ -7,8 +7,35 @@ import java.util.Objects;
 import java.lang.Math;
 
 public class CidrUtils {
-    public static List<String> getFreeCidrFromSlash(List<String> occupiedCidrRanges, int slash) {
+    public static List<String> getFreeCidrFromSlash(List<String> occupiedCidrRanges, int slash, String start, String stop) {
         var freeCIDRs = new ArrayList<String>();
+
+        var firstOccupiedCidr = occupiedCidrRanges.get(0);
+        var startingIpOfFirstOccupiedCidr = getStartingIpOfCidr(firstOccupiedCidr);
+        var dumbEndingIpOfPrevious = "000.000.000.000";
+        var startingIpIsMismatch = !start.equals(startingIpOfFirstOccupiedCidr);
+        if (startingIpIsMismatch) {
+            var startingIp = start;
+            var startingIsMismatch = true;
+            while (startingIsMismatch) {
+                var draftCidr = _getCidrFromStartingIp(startingIp, slash);
+                var startOfDraft = getStartingIpOfCidr(draftCidr);
+                var endOfDraft = getEndingIpOfCidr(draftCidr);
+                var startOfDraftFitsSlot =
+                        getIpIsBetween(startOfDraft, dumbEndingIpOfPrevious, startingIpOfFirstOccupiedCidr);
+                var endOfDraftFitsSlot =
+                        getIpIsBetween(endOfDraft, dumbEndingIpOfPrevious, startingIpOfFirstOccupiedCidr);
+
+                if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
+                    freeCIDRs.add(draftCidr);
+                    startingIp = getNextIp(endOfDraft);
+                    startingIsMismatch = !getNextIp(endOfDraft).equals(startingIpOfFirstOccupiedCidr);
+                } else {
+                    break;
+                }
+            }
+        }
+
         for (int index = 0; index < occupiedCidrRanges.size() - 1; index++) {
             var currentCidr = occupiedCidrRanges.get(index);
             var nextCidr = occupiedCidrRanges.get(index + 1);
@@ -65,6 +92,32 @@ public class CidrUtils {
 
             }
         }
+
+        var lastOccupiedCidr = occupiedCidrRanges.get(occupiedCidrRanges.size() - 1);
+        var endingIpOfLastOccupiedCidr = getEndingIpOfCidr(lastOccupiedCidr);
+        var endingIpIsMismatch = !stop.equals(endingIpOfLastOccupiedCidr);
+        if (endingIpIsMismatch) {
+            var startingIp = getNextIp(endingIpOfLastOccupiedCidr);
+            var endingIsMismatch = true;
+            while (endingIsMismatch) {
+                var draftCidr = _getCidrFromStartingIp(startingIp, slash);
+                var startOfDraft = getStartingIpOfCidr(draftCidr);
+                var endOfDraft = getEndingIpOfCidr(draftCidr);
+                var startOfDraftFitsSlot =
+                        getIpIsBetween(startOfDraft, endingIpOfLastOccupiedCidr, stop);
+                var endOfDraftFitsSlot =
+                        getIpIsBetween(endOfDraft, endingIpOfLastOccupiedCidr, stop);
+
+                if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
+                    freeCIDRs.add(draftCidr);
+                    startingIp = getNextIp(endOfDraft);
+                    endingIsMismatch = !stop.equals(endOfDraft);
+                } else {
+                    break;
+                }
+            }
+        }
+
         return freeCIDRs;
     }
 
