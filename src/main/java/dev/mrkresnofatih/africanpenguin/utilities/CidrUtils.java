@@ -7,7 +7,8 @@ import java.util.Objects;
 import java.lang.Math;
 
 public class CidrUtils {
-    public static List<String> getFreeCidrFromSlash(List<String> occupiedCidrRanges, int slash, String start, String stop) {
+    public static List<String> getFreeCidrFromSlash(List<String> occupiedCidrRanges, int slash,
+                                                    String start, String stop, int limit) {
         var freeCIDRs = new ArrayList<String>();
 
         var firstOccupiedCidr = occupiedCidrRanges.get(0);
@@ -28,6 +29,11 @@ public class CidrUtils {
 
                 if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
                     freeCIDRs.add(draftCidr);
+
+                    if (freeCIDRs.size() >= limit) {
+                        return freeCIDRs;
+                    }
+
                     startingIp = getNextIp(endOfDraft);
                     startingIsMismatch = !getNextIp(endOfDraft).equals(startingIpOfFirstOccupiedCidr);
                 } else {
@@ -62,6 +68,11 @@ public class CidrUtils {
 
                     if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
                         freeCIDRs.add(draftCidr);
+
+                        if (freeCIDRs.size() >= limit) {
+                            return freeCIDRs;
+                        }
+
                         currentCidr = draftCidr;
                         startOfCurrentCidr = startOfDraft;
                         endOfCurrentCidr = endOfDraft;
@@ -81,6 +92,11 @@ public class CidrUtils {
 
                     if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
                         freeCIDRs.add(draftCidr);
+
+                        if (freeCIDRs.size() >= limit) {
+                            return freeCIDRs;
+                        }
+
                         currentCidr = draftCidr;
                         startOfCurrentCidr = startOfDraft;
                         endOfCurrentCidr = endOfDraft;

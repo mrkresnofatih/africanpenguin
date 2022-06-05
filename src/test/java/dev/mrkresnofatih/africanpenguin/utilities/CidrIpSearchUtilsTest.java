@@ -23,8 +23,9 @@ public class CidrIpSearchUtilsTest {
         var slash = 17;
         var start = "010.000.000.000";
         var stop = "010.008.000.000";
+        var limit = 5;
         var calculatedFreeCidr = CidrUtils
-                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop);
+                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop, limit);
         assertThat(calculatedFreeCidr)
                 .containsExactly(
                         "010.003.128.000/17",
@@ -51,8 +52,9 @@ public class CidrIpSearchUtilsTest {
         var slash = 16;
         var start = "010.000.000.000";
         var stop = "010.010.000.000";
+        var limit = 3;
         var calculatedFreeCidr = CidrUtils
-                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop);
+                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop, limit);
         assertThat(calculatedFreeCidr)
                 .containsExactly(
                         "010.006.000.000/16",
@@ -76,8 +78,9 @@ public class CidrIpSearchUtilsTest {
         var slash = 18;
         var start = "010.000.000.000";
         var stop = "010.007.000.000";
+        var limit = 5;
         var calculatedFreeCidr = CidrUtils
-                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop);
+                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop, limit);
         assertThat(calculatedFreeCidr)
                 .containsExactly(
                         "010.003.064.000/18",
@@ -104,8 +107,9 @@ public class CidrIpSearchUtilsTest {
         var slash = 17;
         var start = "010.000.000.000";
         var stop = "010.011.000.000";
+        var limit = 20;
         var calculatedFreeCidr = CidrUtils
-                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop);
+                .getFreeCidrFromSlash(occupiedCidrRanges, slash, start, stop, limit);
         assertThat(calculatedFreeCidr)
                 .containsExactly(
                         "010.000.000.000/17",
