@@ -33,6 +33,30 @@ public class CidrIpSearchUtilsTest {
     }
 
     @Test
+    void itShouldReturnCorrectFreeCidrRangeOnMuchBiggerSlash() {
+        var occupiedCidrRanges = List
+                .of(
+                        "010.000.000.000/16",
+                        "010.001.000.000/16",
+                        "010.002.000.000/17",
+                        "010.002.128.000/17",
+                        "010.003.000.000/18",
+                        "010.004.000.000/16",
+                        "010.005.000.000/17",
+                        "010.007.000.000/16",
+                        "010.009.000.000/16"
+                );
+        var slash = 16;
+        var calculatedFreeCidr = CidrUtils
+                .getFreeCidrFromSlash(occupiedCidrRanges, slash);
+        assertThat(calculatedFreeCidr)
+                .containsExactly(
+                        "010.006.000.000/16",
+                        "010.008.000.000/16"
+                );
+    }
+
+    @Test
     void itShouldReturnCorrectFreeCidrRangeOnSmallerSlash() {
         var occupiedCidrRanges = List
                 .of(

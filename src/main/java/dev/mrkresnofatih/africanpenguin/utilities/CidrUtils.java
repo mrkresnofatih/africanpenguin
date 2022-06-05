@@ -13,24 +13,16 @@ public class CidrUtils {
             var currentCidr = occupiedCidrRanges.get(index);
             var nextCidr = occupiedCidrRanges.get(index + 1);
 
-            System.out.println("current cidr: " + currentCidr);
-            System.out.println("next cidr: " + nextCidr);
-
             var startOfCurrentCidr = getStartingIpOfCidr(currentCidr);
             var endOfCurrentCidr = getEndingIpOfCidr(currentCidr);
             var startOfNextCidr = getStartingIpOfCidr(nextCidr);
 
-            System.out.println("startOfNextCidr: " + startOfNextCidr);
-
             var mismatchWithNextStart = !getNextIp(endOfCurrentCidr).equals(startOfNextCidr);
 
-            if (mismatchWithNextStart) {
-                System.out.println("mismatch: " + endOfCurrentCidr + " -> " + startOfNextCidr);
+            while (mismatchWithNextStart) {
                 var slashOfCurrentCidr = _getSlashFromCidr(currentCidr);
-                System.out.println("slashCurrent: " + slashOfCurrentCidr + "; slash: " + slash);
                 if (slash <= slashOfCurrentCidr) {
                     var supposedCidr = _getCidrFromStartingIp(startOfCurrentCidr, slash);
-                    System.out.println("supposedCurrentCidr: " + supposedCidr);
                     var endingIpOfSupposedCidr = getEndingIpOfCidr(supposedCidr);
                     var nextIpOfEndingIpOfSupposedCidr = getNextIp(endingIpOfSupposedCidr);
 
@@ -43,22 +35,34 @@ public class CidrUtils {
 
                     if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
                         freeCIDRs.add(draftCidr);
+                        currentCidr = draftCidr;
+                        startOfCurrentCidr = startOfDraft;
+                        endOfCurrentCidr = endOfDraft;
+                        mismatchWithNextStart = !getNextIp(endOfCurrentCidr).equals(startOfNextCidr);
+                    } else {
+                        break;
                     }
-                    continue;
+                } else {
+                    var nextIpOfEndingIpOfCurrentCidr = getNextIp(endOfCurrentCidr);
+
+                    var draftCidr = _getCidrFromStartingIp(nextIpOfEndingIpOfCurrentCidr, slash);
+                    var startOfDraft = getStartingIpOfCidr(draftCidr);
+                    var endOfDraft = getEndingIpOfCidr(draftCidr);
+
+                    var startOfDraftFitsSlot = getIpIsBetween(startOfDraft, endOfCurrentCidr, startOfNextCidr);
+                    var endOfDraftFitsSlot = getIpIsBetween(endOfDraft, endOfCurrentCidr, startOfNextCidr);
+
+                    if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
+                        freeCIDRs.add(draftCidr);
+                        currentCidr = draftCidr;
+                        startOfCurrentCidr = startOfDraft;
+                        endOfCurrentCidr = endOfDraft;
+                        mismatchWithNextStart = !getNextIp(endOfCurrentCidr).equals(startOfNextCidr);
+                    } else {
+                        break;
+                    }
                 }
 
-                var nextIpOfEndingIpOfCurrentCidr = getNextIp(endOfCurrentCidr);
-
-                var draftCidr = _getCidrFromStartingIp(nextIpOfEndingIpOfCurrentCidr, slash);
-                var startOfDraft = getStartingIpOfCidr(draftCidr);
-                var endOfDraft = getEndingIpOfCidr(draftCidr);
-
-                var startOfDraftFitsSlot = getIpIsBetween(startOfDraft, endOfCurrentCidr, startOfNextCidr);
-                var endOfDraftFitsSlot = getIpIsBetween(endOfDraft, endOfCurrentCidr, startOfNextCidr);
-
-                if (startOfDraftFitsSlot && endOfDraftFitsSlot) {
-                    freeCIDRs.add(draftCidr);
-                }
             }
         }
         return freeCIDRs;
@@ -69,13 +73,13 @@ public class CidrUtils {
     }
 
     public static Boolean getIpIsBetween(String ip, String bottomIp, String topIp) {
-        var pseudoValueBottom = getPseudoValueOfIp(bottomIp);
-        var pseudoValueTop = getPseudoValueOfIp(topIp);
-        var pseudoValueIp = getPseudoValueOfIp(ip);
+        var pseudoValueBottom = _getPseudoValueOfIp(bottomIp);
+        var pseudoValueTop = _getPseudoValueOfIp(topIp);
+        var pseudoValueIp = _getPseudoValueOfIp(ip);
         return (pseudoValueIp > pseudoValueBottom && pseudoValueIp < pseudoValueTop);
     }
 
-    private static Long getPseudoValueOfIp(String ip) {
+    private static Long _getPseudoValueOfIp(String ip) {
         var segments = ip.split("[./]");
         var pseudoValue = 0L;
         var segmentCounter = 0;
@@ -151,32 +155,32 @@ public class CidrUtils {
         var slash = _getSlashFromCidr(formattedCidr);
         var identicalStartingDigits = slash / 8;
         return switch (identicalStartingDigits) {
-            case 0 -> String.format("%s.255.255.255", getNextSegment(slash, segments[0]));
-            case 1 -> String.format("%s.%s.255.255", segments[0], getNextSegment(slash, segments[1]));
-            case 2 -> String.format("%s.%s.%s.255", segments[0], segments[1], getNextSegment(slash, segments[2]));
-            case 3 -> String.format("%s.%s.%s.%s", segments[0], segments[1], segments[2], getNextSegment(slash, segments[3]));
+            case 0 -> String.format("%s.255.255.255", _getNextSegment(slash, segments[0]));
+            case 1 -> String.format("%s.%s.255.255", segments[0], _getNextSegment(slash, segments[1]));
+            case 2 -> String.format("%s.%s.%s.255", segments[0], segments[1], _getNextSegment(slash, segments[2]));
+            case 3 -> String.format("%s.%s.%s.%s", segments[0], segments[1], segments[2], _getNextSegment(slash, segments[3]));
             default -> String.format("%s.%s.%s.%s", segments[0], segments[1], segments[2], segments[3]);
         };
     }
 
-    private static String getNextSegment(int slash, String segment) {
+    private static String _getNextSegment(int slash, String segment) {
         var slashPlus = slash % 8;
-        return getStringIntegerIsEven(segment) ?
-                calculateNextSegmentEven(segment, slashPlus) :
-                calculateNextSegmentOdd(segment);
+        return _getStringIntegerIsEven(segment) ?
+                _calculateNextSegmentEven(segment, slashPlus) :
+                _calculateNextSegmentOdd(segment);
     }
 
-    private static String calculateNextSegmentEven(String segment, int slashPlus) {
+    private static String _calculateNextSegmentEven(String segment, int slashPlus) {
         var newSegment = (Integer.parseInt(segment)) + (256/Math.pow(2, slashPlus)) - 1;
         return String.format("%03d", (int) newSegment);
     }
 
-    private static String calculateNextSegmentOdd(String segment) {
+    private static String _calculateNextSegmentOdd(String segment) {
         var newSegment = (Integer.parseInt(segment)) + 1;
         return String.format("%03d", newSegment);
     }
 
-    private static Boolean getStringIntegerIsEven(String stringInteger) {
+    private static Boolean _getStringIntegerIsEven(String stringInteger) {
         return (Integer.parseInt(stringInteger) % 2 == 0);
     }
 
@@ -199,7 +203,7 @@ public class CidrUtils {
             segmentCounter++;
 
             // Check if they are int-parsable
-            var parsed = tryParseInteger(segment);
+            var parsed = _tryParseInteger(segment);
             if (Objects.isNull(parsed)) {
                 return false;
             }
@@ -288,7 +292,7 @@ public class CidrUtils {
                 slashSegment);
     }
 
-    private static Integer tryParseInteger(String text) {
+    private static Integer _tryParseInteger(String text) {
         try {
             return Integer.parseInt(text);
         } catch (NumberFormatException e) {
