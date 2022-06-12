@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  dynamodb:
+    container_name: "dynamodb"
+    image: amazon/dynamodb-local:1.18.0
+    command: "-jar DynamoDBLocal.jar"
+    ports:
+      - "8000:8000"

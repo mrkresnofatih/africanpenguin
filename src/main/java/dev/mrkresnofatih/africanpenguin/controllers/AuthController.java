@@ -14,16 +14,16 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "/auth")
 public class AuthController {
-    private final IAuthService authService;
+    private final IAuthService _authService;
 
     @Autowired
     public AuthController(IAuthService authService) {
-        this.authService = authService;
+        _authService = authService;
     }
 
     @PostMapping(path = "/login")
     public ResponsePackage<LoginTokenResponse> Login(@Valid @RequestBody LoginCredentials loginCredentials) throws IncorrectCredentialsException {
-        var loginTokenResponse = authService.LoginGetToken(loginCredentials);
+        var loginTokenResponse = _authService.LoginGetToken(loginCredentials);
         return new ResponseHandler<LoginTokenResponse>().WrapSuccess(loginTokenResponse);
     }
 
