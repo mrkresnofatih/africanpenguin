@@ -26,7 +26,7 @@ public class AwsDynamoDbConfigs {
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
                                 new BasicAWSCredentials(awsDynamoDbAccessKey, awsDynamoDbAccessSecret)))
-                .withRegion(Regions.AP_SOUTHEAST_1)
+                .withRegion(Regions.AP_SOUTHEAST_3)
                 .build();
     }
 }

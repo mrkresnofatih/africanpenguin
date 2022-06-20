@@ -1,11 +1,13 @@
 package dev.mrkresnofatih.africanpenguin.services;
 
+import dev.mrkresnofatih.africanpenguin.models.dtos.PartnerCreateDto;
+import dev.mrkresnofatih.africanpenguin.models.dtos.PartnerGetDto;
 import dev.mrkresnofatih.africanpenguin.models.entities.Partner;
 
 public interface IPartnerService {
-    Partner SavePartner(Partner partner);
+    PartnerGetDto SavePartner(PartnerCreateDto partnerCreateDto);
 
-    Partner GetPartner(String partnerId);
+    PartnerGetDto GetPartner(String partnerId);
 
-    void DeletePartner(String partnerId);
+    String DeletePartner(String partnerId);
 }

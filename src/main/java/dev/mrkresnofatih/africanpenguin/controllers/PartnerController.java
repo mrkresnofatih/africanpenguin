@@ -2,13 +2,11 @@ package dev.mrkresnofatih.africanpenguin.controllers;
 
 import dev.mrkresnofatih.africanpenguin.models.ResponseHandler;
 import dev.mrkresnofatih.africanpenguin.models.ResponsePackage;
-import dev.mrkresnofatih.africanpenguin.models.entities.Partner;
+import dev.mrkresnofatih.africanpenguin.models.dtos.PartnerCreateDto;
+import dev.mrkresnofatih.africanpenguin.models.dtos.PartnerGetDto;
 import dev.mrkresnofatih.africanpenguin.services.IPartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -23,8 +21,20 @@ public class PartnerController {
     }
 
     @PostMapping(path = "/save")
-    public ResponsePackage<Partner> SavePartner(@Valid @RequestBody Partner partner){
-        var res = _partnerService.SavePartner(partner);
-        return new ResponseHandler<Partner>().WrapSuccess(partner);
+    public ResponsePackage<PartnerGetDto> SavePartner(@Valid @RequestBody PartnerCreateDto partnerCreateDto){
+        var res = _partnerService.SavePartner(partnerCreateDto);
+        return new ResponseHandler<PartnerGetDto>().WrapSuccess(res);
+    }
+
+    @GetMapping(path = "/get/{partnerId}")
+    public ResponsePackage<PartnerGetDto> GetPartner(@PathVariable String partnerId) {
+        var res = _partnerService.GetPartner(partnerId);
+        return new ResponseHandler<PartnerGetDto>().WrapSuccess(res);
+    }
+
+    @GetMapping(path = "/delete/{partnerId}")
+    public ResponsePackage<String> DeletePartner(@PathVariable String partnerId) {
+        var res = _partnerService.DeletePartner(partnerId);
+        return new ResponseHandler<String>().WrapSuccess(res);
     }
 }

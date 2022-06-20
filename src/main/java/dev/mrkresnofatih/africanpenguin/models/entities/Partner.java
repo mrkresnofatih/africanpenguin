@@ -1,5 +1,7 @@
 package dev.mrkresnofatih.africanpenguin.models.entities;
 
+import dev.mrkresnofatih.africanpenguin.models.dtos.PartnerGetDto;
+
 import javax.validation.constraints.NotBlank;
 
 public class Partner extends DynamoEntity {
@@ -38,6 +40,10 @@ public class Partner extends DynamoEntity {
 
     public void setPartnerName(String partnerName) {
         PartnerName = partnerName;
+    }
+
+    public PartnerGetDto ToPartnerGetDto() {
+        return new PartnerGetDto(PartnerId, PartnerName);
     }
 
 
