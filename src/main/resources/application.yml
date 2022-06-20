@@ -1,4 +1,0 @@
-application:
-  default-username: admin
-  default-password: password
-  jwt-secret: 380YQpy1hnMkKCEeEJ6S4LIZYLPN2HO8NPS89s3K

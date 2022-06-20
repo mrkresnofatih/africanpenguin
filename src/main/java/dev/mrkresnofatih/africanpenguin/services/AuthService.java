@@ -64,7 +64,7 @@ public class AuthService implements IAuthService {
     private String generateToken() {
         try {
             Algorithm algorithm = Algorithm.HMAC256(JwtSecret);
-            Long nextExpire = TimeUtils.GetUtcLaterMilliseconds(30);
+            Long nextExpire = TimeUtils.GetUtcLaterMilliseconds(240);
             return JWT
                     .create()
                     .withClaim("role", "admin")
